@@ -43,6 +43,7 @@ class DescripcionMaterialController extends Controller {
         $descripcionMaterial = new DescripcionMaterial();
         $descripcionMaterial->descripcion_texto = $request->input('descripcion_texto');
         $descripcionMaterial->numero_orden_produccion = $request->input('numero_orden_produccion');
+        $descripcionMaterial->id_acta_entrega = $request->input('id_acta_entrega');
         $descripcionMaterial->save();
 
         return response()->json($descripcionMaterial ->toArray() + ['mensaje' => 'Descripcion Material creada'],);
@@ -57,6 +58,7 @@ class DescripcionMaterialController extends Controller {
 
         $descripcionMaterial->descripcion_texto = $request->input('descripcion_texto', $descripcionMaterial->descripcion_texto);
         $descripcionMaterial->numero_orden_produccion = $request->input('numero_orden_produccion', $descripcionMaterial->numero_orden_produccion);
+        $descripcionMaterial->id_acta_entrega = $request->input('id_acta_entrega', $descripcionMaterial->id_acta_entrega);
         $descripcionMaterial->save();
 
         return response()->json($descripcionMaterial ->toArray() + ['mensaje' => 'Descripcion Material actualizado'],);
