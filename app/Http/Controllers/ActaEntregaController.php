@@ -12,6 +12,16 @@ class ActaEntregaController extends Controller
     {
         $actas = ActaEntrega::with('cliente', 'material')->get();
 
+        // funcion para quitar los campos que sobran en la relacion uno a muchos
+        $actas->each(function ($acta) {
+            if ($acta->cliente) {
+                $acta->cliente->makeHidden(['created_at', 'updated_at', 'id']);
+            }
+            if ($acta->material) {
+                $acta->material->makeHidden(['created_at', 'updated_at', 'id', 'id_acta_entrega']);
+            }
+        });
+
         return response()->json($actas);
     }
 
@@ -22,6 +32,11 @@ class ActaEntregaController extends Controller
         if (!$acta) {
             return response()->json(['message' => 'Acta de entrega no encontrada'], 404);
         }
+
+        if ($acta->cliente) {
+            $acta->cliente->makeHidden(['created_at', 'updated_at']);
+        }
+
         return response()->json($acta);
     }
     public function store(Request $request)
@@ -30,7 +45,6 @@ class ActaEntregaController extends Controller
         $acta->fecha_entrega = $request->filled('fecha_entrega') ? $request->input('fecha_entrega') : now()->toDateString();
         $acta->id_cliente = $request->input('id_cliente');
         $acta->numero_orden_compra = $request->input('numero_orden_compra');
-        $acta->id_orden_produccion = $request->input('id_orden_produccion');
         $acta->save();
 
         return response()->json($acta->toArray() + ['mensaje' => 'Acta de entrega creada'], );
@@ -47,7 +61,6 @@ class ActaEntregaController extends Controller
 
         $acta->id_cliente = $request->input('id_cliente', $acta->id_cliente);
         $acta->numero_orden_compra = $request->input('numero_orden_compra', $acta->numero_orden_compra);
-        $acta->id_orden_produccion = $request->input('id_orden_produccion', $acta->id_orden_produccion);
         $acta->save();
 
             return response()->json($acta ->toArray() + ['mensaje' => 'Acta de entrega actualizada'],);
