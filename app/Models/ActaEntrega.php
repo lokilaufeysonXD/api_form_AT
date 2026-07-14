@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DescripcionMaterial;
 
 class ActaEntrega extends Model
 {
@@ -12,18 +13,23 @@ class ActaEntrega extends Model
         'fecha_entrega',
         'id_cliente',
         'numero_orden_compra',
-        'id_orden_produccion',
     ];
 
-    // relacion con modelo cliente
+    // Relación con modelo Cliente
     public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'id_cliente');
     }
 
-    // relacion con modelo DescripcionMaterial
+    // Relación uno a muchos con DescripcionMaterial
     public function material()
     {
-        return $this->belongsTo(DescripcionMaterial::class, 'id_orden_produccion');
+        return $this->hasMany(DescripcionMaterial::class, 'id_acta_entrega');
+    }
+
+    // Relación con DescripcionMaterial (uno a muchos)
+    public function materiales()
+    {
+        return $this->hasMany(DescripcionMaterial::class, 'id_acta_entrega');
     }
 }
