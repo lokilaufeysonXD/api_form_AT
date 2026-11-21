@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ActaEntrega;
 
 class DescripcionMaterial extends Model
 {
@@ -10,12 +11,14 @@ class DescripcionMaterial extends Model
     
     protected $fillable = [
         'descripcion_texto',
-        'numero_orden_produccion'
+        'numero_orden_produccion',
+        'id_acta_entrega'
+
     ];
 
-    // relacion inversa
-    public function actasEntrega()
+    // relación con ActaEntrega (pertenencia)
+    public function actaEntrega()
     {
-        return $this->hasMany(ActaEntrega::class, 'id_descripcion_material');
+        return $this->belongsTo(ActaEntrega::class, 'id_acta_entrega');
     }
 }

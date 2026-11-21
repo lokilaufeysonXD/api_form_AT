@@ -10,15 +10,32 @@ use Illuminate\Routing\Controller;
 class DescripcionMaterialController extends Controller {
     public function index()
     {
-        $descripcionMaterial = DescripcionMaterial::all();
+        $descripcionMaterial = DescripcionMaterial::with('actaEntrega')->get();
 
-        return response()->json($descripcionMaterial);
+        $data = $descripcionMaterial->map(function ($item) {
+            $array = $item->toArray();
+            if (array_key_exists('acta_entrega', $array)) {
+                $array['id_acta_entrega'] = $array['acta_entrega'];
+                unset($array['acta_entrega']);
+            }
+            return $array;
+        });
+
+        return response()->json($data);
     }
 
     public function show($id)
     {
-        $descripcionMaterial = DescripcionMaterial::find($id);
-        return response()->json($descripcionMaterial);
+        $descripcionMaterial = DescripcionMaterial::with('actaEntrega')->find($id);
+        if (!$descripcionMaterial) {
+            return response()->json(['message' => 'Descripcion Material no encontrado'], 404);
+        }
+        $data = $descripcionMaterial->toArray();
+        if (array_key_exists('acta_entrega', $data)) {
+            $data['id_acta_entrega'] = $data['acta_entrega'];
+            unset($data['acta_entrega']);
+        }
+        return response()->json($data);
     }
 
     public function store(Request $request)
@@ -26,6 +43,7 @@ class DescripcionMaterialController extends Controller {
         $descripcionMaterial = new DescripcionMaterial();
         $descripcionMaterial->descripcion_texto = $request->input('descripcion_texto');
         $descripcionMaterial->numero_orden_produccion = $request->input('numero_orden_produccion');
+        $descripcionMaterial->id_acta_entrega = $request->input('id_acta_entrega');
         $descripcionMaterial->save();
 
         return response()->json($descripcionMaterial ->toArray() + ['mensaje' => 'Descripcion Material creada'],);
@@ -40,6 +58,7 @@ class DescripcionMaterialController extends Controller {
 
         $descripcionMaterial->descripcion_texto = $request->input('descripcion_texto', $descripcionMaterial->descripcion_texto);
         $descripcionMaterial->numero_orden_produccion = $request->input('numero_orden_produccion', $descripcionMaterial->numero_orden_produccion);
+        $descripcionMaterial->id_acta_entrega = $request->input('id_acta_entrega', $descripcionMaterial->id_acta_entrega);
         $descripcionMaterial->save();
 
         return response()->json($descripcionMaterial ->toArray() + ['mensaje' => 'Descripcion Material actualizado'],);
