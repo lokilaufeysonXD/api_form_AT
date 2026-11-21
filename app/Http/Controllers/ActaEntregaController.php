@@ -8,12 +8,14 @@ use Illuminate\Routing\Controller;
 
 class ActaEntregaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $actas = ActaEntrega::with('cliente', 'material')->get();
+        $actas = ActaEntrega::with('cliente', 'material')
+            ->latest()
+            ->paginate(10);
 
         // funcion para quitar los campos que sobran en la relacion uno a muchos
-        $actas->each(function ($acta) {
+        $actas->getCollection()->each(function ($acta) {
             if ($acta->cliente) {
                 $acta->cliente->makeHidden(['created_at', 'updated_at', 'id']);
             }
